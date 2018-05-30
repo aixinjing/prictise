@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 import static java.util.Comparator.comparingInt;
 import static java.util.stream.Collectors.*;
 
-public class Main {
+public class StreamTest {
 
     public static void main(String[] args) {
         List<String> list= Arrays.asList("1","2","3","44");

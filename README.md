@@ -7,6 +7,8 @@
 
 3. default方法的提出原因
 
+3. 流式操作的例子 -->StreamTest
+
 
 ### 2. 并行数据处理与性能
 并行流就是一个把内容分成多个数据块，并用不同的线程分别处理每个数据块的流。这样一来，你就可以自动把给定操作的工作负荷
@@ -20,12 +22,12 @@
     分支/合并框架的目的是以递归方式将可以并行的任务拆分成更小的任务，然后将每个子任
 务的结果合并起来生成整体结果。它是 ExecutorService 接口的一个实现，它把子任务分配给
 线程池（称为 ForkJoinPool ）中的工作线程。首先来看看如何定义任务和子任务  
-ForkJoinSumCalculator
 ![合并框架过程图](images/分支合并过程图.png)  
 
   要把任务提交到这个池，必须创建RecursiveTask<R> 的一个子类，其中 R 是并行化任务（以
 及所有子任务）产生的结果类型，或者如果任务不返回结果，则是 RecursiveAction 类型（当
 然它可能会更新其他非局部机构）。要定义RecursiveTask，只需实现它唯一的抽象方法compute
+ForkJoinSumCalculator
 
  默认线程数 Runtime.getRuntime().availableProcessors()
 
@@ -52,11 +54,38 @@ Double result = future.get(1, TimeUnit.SECONDS);
 // 在Future对象完成之前超过已过期
 }
 ```
-CompletableFuture继承了Future 思路一致 增加了方便流式操作的方法
+#### CompletableFuture继承了Future 思路一致 增加了方便流式操作的方法
+原始的样子
 ```
- CompletableFuture.supplyAsync(() -> "CF")
-            .thenApply(s -> s + ".thenApply")
-            .thenCompose(s -> CompletableFuture.supplyAsync(() -> s + ".thenCompose"))
+//创建返回CompletableFuture的方法
+public Future<Double> getPriceAsync(String product) {
+CompletableFuture<Double> futurePrice = new CompletableFuture<>();
+new Thread( () -> {
+try {
+//getPrice为一个耗时的方法
+double price = getPrice(product);
+futurePrice.complete(price);
+} catch (Exception ex) {
+futurePrice.completeExceptionally(ex);
+}
+}).start();
+return futurePrice;
+}
+//调用的时候
+
+
+Future<Double> price=getPriceAsync(product);
+//另一个耗时操作 也可以写为异步的
+Float discount=getDiscount(priduct);
+
+Float realprice=price*discount;
+
+```
+
+真实使用场景
+```
+ CompletableFuture.supplyAsync(() -> getPrice(product))
+             thenCombine(CompletableFuture.supplyAsync(() -> getDiscount(product)), (dis, price) -> dis*price）
             .thenAccept(System.out::println);
 ```
 

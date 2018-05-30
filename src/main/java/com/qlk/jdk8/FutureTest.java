@@ -80,7 +80,7 @@ public static void parallelStreamTest(List<Goods> goodsList){
                 new Goods(3, "药品3"),
                 new Goods(4, "药品4")
         );
-        System.out.println(Runtime.getRuntime().availableProcessors());
+       // System.out.println(Runtime.getRuntime().availableProcessors());
 //        parallelStreamTest(goodsList);
         //futureTest(goodsList);
     }

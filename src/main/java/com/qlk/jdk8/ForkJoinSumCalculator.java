@@ -33,10 +33,10 @@ public class ForkJoinSumCalculator extends java.util.concurrent.RecursiveTask<Li
         }
         ForkJoinSumCalculator leftTask =
                 new ForkJoinSumCalculator(works, start, start + length / 2);
-        leftTask.fork();
+         leftTask.fork();
         ForkJoinSumCalculator rightTask =
                 new ForkJoinSumCalculator(works, start + length / 2, end);
-        System.out.println();
+          rightTask.fork();
         List rightResult = rightTask.join();
         List leftResult = leftTask.join();
         leftResult.addAll(rightResult);
@@ -52,36 +52,41 @@ public class ForkJoinSumCalculator extends java.util.concurrent.RecursiveTask<Li
             return list;
         }
 
-    public static List forSum(List<Work> works){
+    public static List forTest(List<Work> works){
+        long start=System.currentTimeMillis();
         for (int i=0;i<works.size();i++){
             works.get(i).doSomeWork();
         }
+        System.out.println("forTest:"+(System.currentTimeMillis()-start));
         return works;
     }
-    public static List forkJoinSum(List<Work> works) {
+    public static List forkJoinTest(List<Work> works) {
+        long start=System.currentTimeMillis();
         ForkJoinTask<List> task = new ForkJoinSumCalculator(works);
-        return new ForkJoinPool().invoke(task);
+        works=new ForkJoinPool().invoke(task);
+        System.out.println("forkJoinTest:"+(System.currentTimeMillis()-start));
+        return  works;
+    }
+    public static List parallelStreamTest(List<Work> works) {
+        long start=System.currentTimeMillis();
+       works.parallelStream().forEach(work -> work.doSomeWork());
+        System.out.println("parallelStreamTest:"+(System.currentTimeMillis()-start));
+        return  works;
     }
     public static void main(String[] args) {
-      List list=new ArrayList(100);
+      List list=new ArrayList();
         IntStream.rangeClosed(0,100).forEach((i)->{
             Work work=new Work();
             list.add(work);
         });
-        long start=System.nanoTime();
-        ForkJoinTask<List> task = new ForkJoinSumCalculator(list);
-        new ForkJoinPool().invoke(task);
-        long end=System.nanoTime();
-        long start1=System.nanoTime();
-        forSum(list);
-        long end1=System.nanoTime();
-        System.out.println("forkJoinSum"+(end-start)/1000_000);
-        System.out.println("forSum"+(end1-start1)/1000_000);
+        forTest(list);
+        parallelStreamTest(list);
+        forkJoinTest(list);
     }
     }
 @Data
 class Work{
-    private  boolean workered;
+    private  boolean worked=false;
 
     public void doSomeWork(){
         try {
@@ -89,7 +94,7 @@ class Work{
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        this.workered=true;
-        System.out.println(workered);
+        this.worked=true;
+       // System.out.println(Thread.currentThread().getName());
     }
 }
