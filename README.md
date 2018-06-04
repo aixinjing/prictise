@@ -17,19 +17,35 @@
   只需要用parallelStream替换stream
   
 2. 并行流的性能分析  
-    ParallelStreamsTest
-3. 分支/合并框架   
+  例子： ParallelStreamsTest
+3. 分支/合并框架- ForkJoin
     分支/合并框架的目的是以递归方式将可以并行的任务拆分成更小的任务，然后将每个子任
-务的结果合并起来生成整体结果。它是 ExecutorService 接口的一个实现，它把子任务分配给
-线程池（称为 ForkJoinPool ）中的工作线程。首先来看看如何定义任务和子任务  
+务的结果合并起来生成整体结果。  
 ![合并框架过程图](images/分支合并过程图.png)  
 
-  要把任务提交到这个池，必须创建RecursiveTask<R> 的一个子类，其中 R 是并行化任务（以
-及所有子任务）产生的结果类型，或者如果任务不返回结果，则是 RecursiveAction 类型（当
-然它可能会更新其他非局部机构）。要定义RecursiveTask，只需实现它唯一的抽象方法compute
-ForkJoinSumCalculator
+它是 ExecutorService 接口的一个实现，它把子任务分配给线程池（称为 ForkJoinPool ）中的工作线程。
 
- 默认线程数 Runtime.getRuntime().availableProcessors()
+ 要把任务提交到这个池，必须创建RecursiveTask<R> 的一个子类，其中 R 是并行化任务（以
+及所有子任务）产生的结果类型，或者如果任务不返回结果，则是 RecursiveAction 类型（当
+然它可能会更新其他非局部机构）。要定义RecursiveTask，只需实现它唯一的抽象方法compute  
+
+protected abstract R compute();
+
+这个方法同时定义了将任务拆分成子任务的逻辑，以及无法再拆分或不方便再拆分时，生成
+单个子任务结果的逻辑。正由于此，这个方法的实现类似于下面的伪代码：
+```
+if (任务足够小或不可分) {
+顺序计算该任务
+} else {
+将任务分成两个子任务
+递归调用本方法，拆分每个子任务，等待所有子任务完成
+合并每个子任务的结果
+}
+```
+
+例子：ForkJoinSumCalculator
+
+默认线程数 Runtime.getRuntime().availableProcessors()
 
 ### 3. CompletableFuture ：组合式异步编程
 #### Future 接口
@@ -73,13 +89,10 @@ return futurePrice;
 }
 //调用的时候
 
-
 Future<Double> price=getPriceAsync(product);
 //另一个耗时操作 也可以写为异步的
 Float discount=getDiscount(priduct);
-
 Float realprice=price*discount;
-
 ```
 
 真实使用场景
