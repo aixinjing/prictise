@@ -3,7 +3,7 @@
 
 1. 函数式接口
 
-1. Optional 的使用 --> `OptionalTest`
+1. `Optional` 的使用 --> `OptionalTest`
 
 3. default方法的提出原因
 
@@ -23,7 +23,7 @@
 务的结果合并起来生成整体结果。  
 ![合并框架过程图](images/分支合并过程图.png)  
 
-它是 ExecutorService 接口的一个实现，它把子任务分配给线程池（称为 ForkJoinPool ）中的工作线程。
+它是 `ExecutorService` 接口的一个实现，它把子任务分配给线程池（称为 `ForkJoinPool` ）中的工作线程。
 
  要把任务提交到这个池，必须创建`RecursiveTask<R>` 的一个子类，其中 R 是并行化任务（以
 及所有子任务）产生的结果类型，或者如果任务不返回结果，则是 `RecursiveAction` 类型（当
@@ -47,11 +47,11 @@ if (任务足够小或不可分) {
 
 默认线程数 `Runtime.getRuntime().availableProcessors()`
 
-### 3. CompletableFuture ：组合式异步编程
-#### Future 接口
-Future 接口在Java 5中被引入，设计初衷是对将来某个时刻会发生的结果进行建模。它建模
+### 3. `CompletableFuture` ：组合式异步编程
+#### `Future` 接口
+`Future` 接口在Java 5中被引入，设计初衷是对将来某个时刻会发生的结果进行建模。它建模
 了一种异步计算，返回一个执行运算结果的引用，当运算结束后，这个引用被返回给调用方。在
-Future 中触发那些潜在耗时的操作把调用线程解放出来，让它能继续执行其他有价值的工作，
+`Future` 中触发那些潜在耗时的操作把调用线程解放出来，让它能继续执行其他有价值的工作，
 不再需要呆呆等待耗时的操作完成（洗衣房的例子或欠条）。
 ```
 ExecutorService executor = Executors.newCachedThreadPool();
@@ -70,7 +70,7 @@ Double result = future.get(1, TimeUnit.SECONDS);
 // 在Future对象完成之前超过已过期
 }
 ```
-#### CompletableFuture继承了Future 思路一致 增加了方便流式操作的方法
+#### `CompletableFuture`继承了`Future` 思路一致 增加了方便流式操作的方法
 原始的样子
 ```
 //创建返回CompletableFuture的方法
