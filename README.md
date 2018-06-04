@@ -3,11 +3,11 @@
 
 1. 函数式接口
 
-1. Optional 的使用 --> OptionalTest
+1. Optional 的使用 --> `OptionalTest`
 
 3. default方法的提出原因
 
-3. 流式操作的例子 -->StreamTest
+3. 流式操作的例子 -->`StreamTest`
 
 
 ### 2. 并行数据处理与性能
@@ -17,17 +17,17 @@
   只需要用parallelStream替换stream
   
 2. 并行流的性能分析  
-  例子： ParallelStreamsTest
-3. 分支/合并框架- ForkJoin
+  例子： `ParallelStreamsTest`
+3. 分支/合并框架- `ForkJoin`
     分支/合并框架的目的是以递归方式将可以并行的任务拆分成更小的任务，然后将每个子任
 务的结果合并起来生成整体结果。  
 ![合并框架过程图](images/分支合并过程图.png)  
 
 它是 ExecutorService 接口的一个实现，它把子任务分配给线程池（称为 ForkJoinPool ）中的工作线程。
 
- 要把任务提交到这个池，必须创建RecursiveTask<R> 的一个子类，其中 R 是并行化任务（以
-及所有子任务）产生的结果类型，或者如果任务不返回结果，则是 RecursiveAction 类型（当
-然它可能会更新其他非局部机构）。要定义RecursiveTask，只需实现它唯一的抽象方法compute  
+ 要把任务提交到这个池，必须创建`RecursiveTask<R>` 的一个子类，其中 R 是并行化任务（以
+及所有子任务）产生的结果类型，或者如果任务不返回结果，则是 `RecursiveAction` 类型（当
+然它可能会更新其他非局部机构）。要定义RecursiveTask，只需实现它唯一的抽象方法`compute ` 
 
 protected abstract R compute();
 
@@ -43,9 +43,9 @@ if (任务足够小或不可分) {
 }
 ```
 
-例子：ForkJoinSumCalculator
+例子：`ForkJoinSumCalculator`
 
-默认线程数 Runtime.getRuntime().availableProcessors()
+默认线程数 `Runtime.getRuntime().availableProcessors()`
 
 ### 3. CompletableFuture ：组合式异步编程
 #### Future 接口
