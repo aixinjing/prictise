@@ -35,7 +35,7 @@ public class ForkJoinSumCalculator extends java.util.concurrent.RecursiveTask<Li
                 new ForkJoinSumCalculator(works, start, start + length / 2);
          leftTask.fork();
         ForkJoinSumCalculator rightTask =
-                new ForkJoinSumCalculator(works, start + length / 2, end);
+                new ForkJoinSumCalculator(works, start + length / 2+1, end);
           rightTask.fork();
         List rightResult = rightTask.join();
         List leftResult = leftTask.join();
