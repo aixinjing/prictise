@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class FutureTest {
-    private static final Executor executor = Executors.newFixedThreadPool(7);
+    private static final Executor executor = Executors.newFixedThreadPool(1);
 
     public static void sleep1S(){
         try {
@@ -84,15 +84,7 @@ public static void parallelStreamTest(List<Goods> goodsList){
         );
        // System.out.println(Runtime.getRuntime().availableProcessors());
         //parallelStreamTest(goodsList);
-       // futureTest(goodsList);
-       Future<String> future= CompletableFuture.supplyAsync(()->{
-            System.out.println(1/0);
-            return "aa";
-        }).exceptionally((e)->{
-            //System.out.println(e);
-            System.out.println("aa");
-            return "exception";
-        });
+        futureTest(goodsList);
     }
 
 

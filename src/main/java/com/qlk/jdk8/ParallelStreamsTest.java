@@ -27,6 +27,8 @@ public class ParallelStreamsTest {
         start=System.currentTimeMillis();
         System.out.println("parallelRangedSum result"+ parallelRangedSum(n));
         System.out.println("parallelRangedSum time:"+(+System.currentTimeMillis()-start));
+        for (int i=1;i<10;i++)
+        System.out.println(sideEffectSum(100));
     }
 }
 class Accumulator {
