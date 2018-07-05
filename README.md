@@ -94,7 +94,7 @@ Future<Double> price=getPriceAsync(product);
 Float discount=getDiscount(priduct);
 Float realprice=price*discount;
 ```
-####将两个CompletableFuture建立联系
+####  将两个CompletableFuture建立联系
 1. thenCompose 方法允许你对两个异步操作进行流水线，第一个操作完成时，
 将其结果作为参数传递给第二个操作。你可以创建两个CompletableFutures 对象，
 对第一个 CompletableFuture 对象调用thenCompose ，并向其传递一个函数。当第一个CompletableFuture
