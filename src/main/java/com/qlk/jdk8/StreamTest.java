@@ -62,10 +62,10 @@ public class StreamTest {
         });
         List<Dish> list1= menu.stream().filter((dish)->dish.isVegetarian()).collect(toList());
 
-        Map<Dish.Type,List<Dish>> newMap=menu.stream().collect(groupingBy(Dish::getType));
+        Map<Dish.Type,List<Dish>> newMap=menu.stream().collect(groupingBy((dish)->dish.getType()));
 
         //map
-        List<String> list2=menu.stream().map((dish)->{return dish.getName();}).collect(toList());
+        List<String> list2=menu.stream().map(Dish::getName).collect(toList());
 
         List<String> stringList=new ArrayList<>();
         stringList.add("aa");
@@ -73,6 +73,7 @@ public class StreamTest {
         List list3= Stream.of(menu,menu)
                 .flatMap((tempList)->tempList.stream())
                 .collect(toList());
+        System.out.println(list3);
 
         //min max
         Dish dish3=menu.stream().min((dish1, dish2)->dish1.getCalories().compareTo(dish2.getCalories())).get();
@@ -147,18 +148,6 @@ public class StreamTest {
         calorieafter=Optional.ofNullable(dish).map(Dish::getCalories)
                 .map((tmp)->tmp+1)
                 .orElse(1000);
-
-//        if(dish!=null){
-//           Integer calorie=dish.getCalories();
-//           if(calorie!=null){
-//                calorieafter= calorie+1;
-//           }else{
-                  calorieafter=1000;
-//           }
-//        }else{
-              calorieafter=1000;
-//        }
-
 
     }
 

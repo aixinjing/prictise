@@ -1,7 +1,7 @@
 ### jdk1.8学习总结
 #### 1. 上集回顾
 
-1. 函数式接口
+1. 函数式接口 lambda表达式 箭头函数
 
 1. `Optional` 的使用 --> `OptionalTest`
 
@@ -94,12 +94,19 @@ Future<Double> price=getPriceAsync(product);
 Float discount=getDiscount(priduct);
 Float realprice=price*discount;
 ```
+####将两个CompletableFuture建立联系
+1. thenCompose 方法允许你对两个异步操作进行流水线，第一个操作完成时，
+将其结果作为参数传递给第二个操作。你可以创建两个CompletableFutures 对象，
+对第一个 CompletableFuture 对象调用thenCompose ，并向其传递一个函数。当第一个CompletableFuture
+ 执行完毕后，它的结果将作为该函数的参数，这个函数的返回值是以第一个 CompletableFuture 的返回做输入计算出的第二个 CompletableFuture 对象
+ 2. thenCombine 方法，它接收名为 BiFunction 的第二参数，这个参数
+定义了当两个 CompletableFuture 对象完成计算后，结果如何合并
 
 真实使用场景
 ```
  CompletableFuture.supplyAsync(() -> getPrice(product))
              thenCombine(CompletableFuture.supplyAsync(() -> getDiscount(product)), (dis, price) -> dis*price）
-            .thenAccept(System.out::println);
+            .thenCompose(CompletableFuture.supplyAsync(() ->doSomethingElse());
 ```
 
 #### 实战

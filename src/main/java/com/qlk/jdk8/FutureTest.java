@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class FutureTest {
-    private static final Executor executor = Executors.newFixedThreadPool(100);
+    private static final Executor executor = Executors.newFixedThreadPool(7);
 
     public static void sleep1S(){
         try {
@@ -48,18 +48,19 @@ public class FutureTest {
     }
     public static void futureTest(List<Goods> goodsList){
         long start= System.currentTimeMillis();
-        List<CompletableFuture> futures=goodsList.stream().map((goods) -> CompletableFuture.supplyAsync(() ->getDiscount(goods.getGoodsCode())
-                , executor).thenCombine(CompletableFuture.supplyAsync(() -> getPrice(goods.getGoodsCode()),executor), (dis, price) -> {
+        List<CompletableFuture<Goods>> futures = goodsList.stream().
+                map((goods) -> CompletableFuture.supplyAsync(() -> getDiscount(goods.getGoodsCode())
+                , executor).thenCombine(CompletableFuture.supplyAsync(() -> getPrice(goods.getGoodsCode()), executor), (dis, price) -> {
             goods.setDiscount(dis);
             goods.setPrice(price);
             goods.setRealPrice(price * dis);
             return goods;
-        }).thenCompose((goods1) -> CompletableFuture.supplyAsync(()->{
+        }).thenCompose((goods1) -> CompletableFuture.supplyAsync(() -> {
             goods1.setCouponCode(getCoupon(goods1.getPrice()));
             return goods1;
-            },executor))).collect(Collectors.toList());
-        futures.stream().map(CompletableFuture::join).collect(Collectors.toList());
-        goodsList.forEach(System.out::println);
+        }, executor))).collect(Collectors.toList());
+         futures.stream().map(CompletableFuture::join).collect(Collectors.toList());
+        // goodsList.forEach(System.out::println);
         System.out.println("time:"+(System.currentTimeMillis()-start));
     }
 public static void parallelStreamTest(List<Goods> goodsList){
@@ -68,6 +69,7 @@ public static void parallelStreamTest(List<Goods> goodsList){
             goods.setPrice(getPrice(goods.getGoodsCode()));
             goods.setDiscount(getDiscount(goods.getGoodsCode()));
             goods.setCouponCode(getCoupon(goods.getPrice()));
+            goods.setRealPrice(goods.getPrice()*goods.getDiscount());
             return goods;
         }).forEach(System.out::println);
     System.out.println("time:"+(System.currentTimeMillis()-start));
@@ -81,8 +83,16 @@ public static void parallelStreamTest(List<Goods> goodsList){
                 new Goods(4, "药品4")
         );
        // System.out.println(Runtime.getRuntime().availableProcessors());
-//        parallelStreamTest(goodsList);
-        //futureTest(goodsList);
+        //parallelStreamTest(goodsList);
+       // futureTest(goodsList);
+       Future<String> future= CompletableFuture.supplyAsync(()->{
+            System.out.println(1/0);
+            return "aa";
+        }).exceptionally((e)->{
+            //System.out.println(e);
+            System.out.println("aa");
+            return "exception";
+        });
     }
 
 

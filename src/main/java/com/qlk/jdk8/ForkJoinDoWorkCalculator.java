@@ -7,19 +7,18 @@ import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import java.util.stream.IntStream;
-import java.util.stream.LongStream;
 
-public class ForkJoinSumCalculator extends java.util.concurrent.RecursiveTask<List> {
+public class ForkJoinDoWorkCalculator extends java.util.concurrent.RecursiveTask<List> {
     private final List<Work> works;
     private final int start;
     private final int end;
     public static final long THRESHOLD = 1_0;
 
-    public ForkJoinSumCalculator(List<Work> works) {
+    public ForkJoinDoWorkCalculator(List<Work> works) {
         this(works, 0, works.size());
     }
 
-    private ForkJoinSumCalculator(List<Work> works, int start, int end) {
+    private ForkJoinDoWorkCalculator(List<Work> works, int start, int end) {
         this.works = works;
         this.start = start;
         this.end = end;
@@ -30,17 +29,17 @@ public class ForkJoinSumCalculator extends java.util.concurrent.RecursiveTask<Li
         int length = end - start;
         if (length <= THRESHOLD) {
             return computeSequentially();
+        }else{
+            ForkJoinDoWorkCalculator leftTask =
+                    new ForkJoinDoWorkCalculator(works, start, start + length / 2);
+            ForkJoinDoWorkCalculator rightTask =
+                    new ForkJoinDoWorkCalculator(works, start + length / 2+1, end);
+            invokeAll(leftTask,rightTask);
+            List rightResult = rightTask.join();
+            List leftResult = leftTask.join();
+            leftResult.addAll(rightResult);
+            return leftResult;
         }
-        ForkJoinSumCalculator leftTask =
-                new ForkJoinSumCalculator(works, start, start + length / 2);
-         leftTask.fork();
-        ForkJoinSumCalculator rightTask =
-                new ForkJoinSumCalculator(works, start + length / 2+1, end);
-          rightTask.fork();
-        List rightResult = rightTask.join();
-        List leftResult = leftTask.join();
-        leftResult.addAll(rightResult);
-        return leftResult;
     }
 
     private List<Work> computeSequentially() {
@@ -62,9 +61,12 @@ public class ForkJoinSumCalculator extends java.util.concurrent.RecursiveTask<Li
     }
     public static List forkJoinTest(List<Work> works) {
         long start=System.currentTimeMillis();
-        ForkJoinTask<List> task = new ForkJoinSumCalculator(works);
-        works=new ForkJoinPool().invoke(task);
+        ForkJoinTask<List> task = new ForkJoinDoWorkCalculator(works);
+        new ForkJoinPool().invoke(task);
         System.out.println("forkJoinTest:"+(System.currentTimeMillis()-start));
+        /*works.forEach(work -> {
+            System.out.println(work);
+        });*/
         return  works;
     }
     public static List parallelStreamTest(List<Work> works) {
